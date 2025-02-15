@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Profils et du Personnel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Inclure le fragment "headerFragment" depuis header.html -->
+    <div th:replace="inclusions/header :: headerFragment"></div>
+
+    <div class="main-content">
+        <div class="container-fluid mt-5">
+            <!-- Gestion des Profils -->
+            <div class="row">
+                <div class="col-12 text-right mb-3">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#addProfileModal">Ajouter
+                        Profil</button>
+                    <button class="btn btn-secondary" data-toggle="modal" data-target="#viewProfilesModal">Consulter
+                        Profils</button>
+                </div>
+
+                <!-- Modal Ajouter Profil -->
+                <div class="modal fade" id="addProfileModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Ajouter un Profil</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/profil/enregistrer}" method="post">
+                                    <div class="form-group">
+                                        <label for="libelle">Libellé</label>
+                                        <input type="text" class="form-control" name="libelle" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Voir Profils -->
+                <div class="modal fade" id="viewProfilesModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Liste des Profils</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive table-hover">
+                                    <table id="profileTable" class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Libellé</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="profil : ${profils}">
+                                                <td th:text="${profil.idProfil}"></td>
+                                                <td th:text="${profil.libelle}"></td>
+                                                <td>
+                                                    <a href="#" class="view"
+                                                        th:data-target="'#viewModal' + ${profil.idProfil}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-eye mr-2 fa-lg"></i>
+                                                    </a>
+                                                    <a href="#" class="edit"
+                                                        th:data-target="'#editModal' + ${profil.idProfil}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-pencil-alt text-success mr-2 fa-lg"></i>
+                                                    </a>
+                                                    <a href="#" class="delete"
+                                                        th:data-target="'#deleteModal' + ${profil.idProfil}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-trash text-danger mr-2 fa-lg"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de visualisation des profils -->
+                <div th:each="profil : ${profils}" class="modal fade" th:id="'viewModal' + ${profil.idProfil}"
+                    tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Détails du Profil</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label><strong>ID:</strong></label>
+                                    <span th:text="${profil.idProfil}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong> Libellé: </strong></label>
+                                    <span th:text="${profil.libelle}" class="form-control-static"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de modification des profils -->
+                <div th:each="profil : ${profils}" class="modal fade" th:id="'editModal' + ${profil.idProfil}"
+                    tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modification du Profil</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/profil/modifier}" method="post">
+                                    <input type="hidden" name="idProfil" th:value="${profil.idProfil}">
+
+                                    <div class="form-group">
+                                        <label>Libellé</label>
+                                        <input type="text" class="form-control" name="libelle"
+                                            th:value="${profil.libelle}" required>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de suppression des profils -->
+                <div th:each="profil : ${profils}" class="modal fade" th:id="'deleteModal' + ${profil.idProfil}"
+                    tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation de suppression</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir supprimer le profil <strong><span
+                                            th:text="${profil.libelle}"></span></strong> ?</p>
+                                <p class="text-danger">Cette action est irréversible.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                <a th:href="@{/api/profil/supprimer(id=${profil.idProfil})}"
+                                    class="btn btn-danger">Supprimer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion du Personnel -->
+            <div class="row mt-5">
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title">Ajouter un Personnel</h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/api/personnel/enregistrer}" method="post" th:object="${personnel}">
+                                <div class="form-group">
+                                    <label for="nom">Nom</label>
+                                    <input type="text" class="form-control" id="nom" th:field="*{nom}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prenom">Prénom</label>
+                                    <input type="text" class="form-control" id="prenom" th:field="*{prenom}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Mot de passe</label>
+                                    <input type="password" class="form-control" id="password" th:field="*{password}"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="cipPersonnel">CIP Personnel</label>
+                                    <input type="text" class="form-control" id="cipPersonnel" th:field="*{cipPersonnel}"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="profil">Profil</label>
+                                    <select class="form-control" id="profil" th:field="*{profil.idProfil}" required>
+                                        <option value="">Sélectionner un profil</option>
+                                        <option th:each="profil : ${profils}" th:value="${profil.idProfil}"
+                                            th:text="${profil.libelle}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h3 class="card-title">Liste du Personnel</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="personnelTable" class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Nom</th>
+                                            <th>Prénom</th>
+                                            <th>Email</th>
+                                            <th>CIP</th>
+                                            <th>Profil</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="pers : ${personnels}">
+                                            <td th:text="${pers.idUtilisateur}"></td>
+                                            <td th:text="${pers.nom}"></td>
+                                            <td th:text="${pers.prenom}"></td>
+                                            <td th:text="${pers.email}"></td>
+                                            <td th:text="${pers.cipPersonnel}"></td>
+                                            <td th:text="${pers.profil?.libelle}"></td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm"
+                                                    th:data-target="'#viewPersonnelModal' + ${pers.idUtilisateur}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-warning btn-sm"
+                                                    th:data-target="'#editPersonnelModal' + ${pers.idUtilisateur}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                    th:data-target="'#deletePersonnelModal' + ${pers.idUtilisateur}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de visualisation des personnels -->
+                <div th:each="personnel : ${personnels}" class="modal fade"
+                    th:id="'viewPersonnelModal' + ${personnel.idUtilisateur}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Détails du Personnel</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label><strong>ID:</strong></label>
+                                    <span th:text="${personnel.idUtilisateur}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Nom:</strong></label>
+                                    <span th:text="${personnel.nom}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Prénom:</strong></label>
+                                    <span th:text="${personnel.prenom}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Email:</strong></label>
+                                    <span th:text="${personnel.email}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>CIP Personnel:</strong></label>
+                                    <span th:text="${personnel.cipPersonnel}" class="form-control-static"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de modification des personnels -->
+                <div th:each="personnel : ${personnels}" class="modal fade"
+                    th:id="'editPersonnelModal' + ${personnel.idUtilisateur}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modification du Personnel</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/personnel/modifier}" method="post">
+                                    <input type="hidden" name="idUtilisateur" th:value="${personnel.idUtilisateur}">
+                                    
+                                    <!-- Champ caché pour le mot de passe -->
+                                    <input type="hidden" name="password" th:value="${personnel.password}">
+                                
+                                    <div class="form-group">
+                                        <label>Nom</label>
+                                        <input type="text" class="form-control" name="nom" th:value="${personnel.nom}" required>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label>Prénom</label>
+                                        <input type="text" class="form-control" name="prenom" th:value="${personnel.prenom}" required>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" name="email" th:value="${personnel.email}" required>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label>CIP Personnel</label>
+                                        <input type="text" class="form-control" name="cipPersonnel" th:value="${personnel.cipPersonnel}" required>
+                                    </div>
+                                
+                                    <div class="form-group">
+                                        <label>Profil</label>
+                                        <select class="form-control" name="profil.idProfil" required>
+                                            <option value="">Sélectionner un profil</option>
+                                            <option th:each="profil : ${profils}" 
+                                                    th:value="${profil.idProfil}" 
+                                                    th:text="${profil.libelle}"
+                                                    th:selected="${profil.idProfil} == ${personnel.profil.idProfil}"></option>
+                                        </select>
+                                    </div>
+                                
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de suppression des personnels -->
+                <div th:each="personnel : ${personnels}" class="modal fade"
+                    th:id="'deletePersonnelModal' + ${personnel.idUtilisateur}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation de suppression</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir supprimer le personnel <strong><span
+                                            th:text="${personnel.nom} + ' ' + ${personnel.prenom}"></span></strong> ?
+                                </p>
+                                <p class="text-danger">Cette action est irréversible.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                <form th:action="@{/api/personnel/supprimer}" method="get" style="display:inline;">
+                                    <input type="hidden" name="id" th:value="${personnel.idUtilisateur}" />
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Modal de notification succès -->
+                <div class="modal fade" id="messageModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-check-circle text-success fa-2x"></i> Notification
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p th:if="${successMessage}" th:text="${successMessage}"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de notification erreur -->
+                <div class="modal fade" id="erreurModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-exclamation-circle text-danger fa-2x"></i> Notification d'erreur
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-unstyled" th:if="${erreurs != null && !erreurs.empty}">
+                                    <li class="d-flex align-items-center mb-2" th:each="erreur : ${erreurs}">
+                                        <i class="fas fa-times-circle mr-2 text-danger"></i>
+                                        <span th:text="${erreur}"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#profileTable').DataTable({
+                "pagingType": "full_numbers",
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr_fr.json",
+                    "search": "Recherche :",
+                    "lengthMenu": "Afficher _MENU_ entrées par page",
+                    "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    "paginate": {
+                        "first": "<<",
+                        "last": ">>",
+                        "next": ">",
+                        "previous": "<"
+                    }
+                }
+            });
+
+            $('#personnelTable').DataTable({
+                "pagingType": "full_numbers",
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr_fr.json",
+                    "search": "Recherche :",
+                    "lengthMenu": "Afficher _MENU_ entrées par page",
+                    "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    "paginate": {
+                        "first": "<<",
+                        "last": ">>",
+                        "next": ">",
+                        "previous": "<"
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // Récupération des messages depuis Thymeleaf
+            var successMessage = /*[[${successMessage}]]*/ null;
+            var erreurs = /*[[${erreurs}]]*/ null;
+
+            // Affichage modal de succès
+            if (successMessage && successMessage !== '') {
+                $('#messageModal').modal('show');
+                // Auto-fermeture après 2 secondes
+                setTimeout(function () {
+                    $('#messageModal').modal('hide');
+                }, 2000);
+            }
+
+            // Affichage modal d'erreur
+            if (erreurs && erreurs.length > 0) {
+                $('#erreurModal').modal('show');
+            }
+
+            // Initialisation des DataTables
+            $('#profileTable').DataTable();
+            $('#personnelTable').DataTable();
+        });
+    </script>
+</body>
+
+</html>

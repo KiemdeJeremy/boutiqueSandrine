@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Thymeleaf Page</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Définir un fragment appelé "headerFragment" -->
+    <div th:fragment="headerFragment">
+
+        <!-- Barre de navigation -->
+        <nav class="navbar navbar-expand-xl navbar-light bg-light">
+            <a href="#" class="navbar-brand"><i class="fa fa-cube"></i>Campus <b>Faso</b></a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="navbarCollapse" class="collapse navbar-collapse justify-content-start">
+                <div class="navbar-nav">
+                    <a th:href="@{/}" class="nav-item nav-link">Accueil</a>
+                    <a th:href="@{/api/personnel}" class="nav-item nav-link">Personnel</a>
+                    <a th:href="@{/api/etudiant}" class="nav-item nav-link">Etudiant</a>
+                    <a th:href="@{/rapport}" class="nav-item nav-link">Rapport</a>
+                    <a th:href="@{/api/demande}" class="nav-item nav-link">Demande</a>
+                </div>
+            </div>
+        </nav>
+        <!-- Fin du code de barre de navigation -->
+    </div>
+    </div>
+    <!-- Initialisation des variables Thymeleaf -->
+</body>
+
+</html>

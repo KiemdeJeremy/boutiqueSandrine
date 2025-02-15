@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Types de Demande et des Demandes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Inclure le fragment "headerFragment" depuis header.html -->
+    <div th:replace="inclusions/header :: headerFragment"></div>
+
+    <div class="main-content">
+        <div class="container-fluid mt-5">
+            <!-- Gestion des Types de Demande -->
+            <div class="row">
+                <div class="col-12 text-right mb-3">
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#addTypeDemandeModal">Ajouter Type
+                        de Demande</button>
+                    <button class="btn btn-secondary" data-toggle="modal" data-target="#viewTypeDemandesModal">Consulter
+                        Types de Demande</button>
+                </div>
+
+                <!-- Modal Ajouter Type de Demande -->
+                <div class="modal fade" id="addTypeDemandeModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Ajouter un Type de Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/typeDemande/enregistrer}" method="post">
+                                    <div class="form-group">
+                                        <label for="libelle">Libellé</label>
+                                        <input type="text" class="form-control" name="libelle" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="typeService">Type de Service</label>
+                                        <input type="text" class="form-control" name="typeService" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal Voir Types de Demande -->
+                <div class="modal fade" id="viewTypeDemandesModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Liste des Types de Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive table-hover">
+                                    <table id="typeDemandeTable" class="table table-bordered table-striped">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Libellé</th>
+                                                <th>Type de Service</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr th:each="typeDemande : ${typeDemandes}">
+                                                <td th:text="${typeDemande.idTypeDemande}"></td>
+                                                <td th:text="${typeDemande.libelle}"></td>
+                                                <td th:text="${typeDemande.typeService}"></td>
+                                                <td>
+                                                    <a href="#" class="view"
+                                                        th:data-target="'#viewTypeDemandeModal' + ${typeDemande.idTypeDemande}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-eye mr-2 fa-lg"></i>
+                                                    </a>
+                                                    <a href="#" class="edit"
+                                                        th:data-target="'#editTypeDemandeModal' + ${typeDemande.idTypeDemande}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-pencil-alt text-success mr-2 fa-lg"></i>
+                                                    </a>
+                                                    <a href="#" class="delete"
+                                                        th:data-target="'#deleteTypeDemandeModal' + ${typeDemande.idTypeDemande}"
+                                                        data-toggle="modal">
+                                                        <i class="fa fa-trash text-danger mr-2 fa-lg"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de visualisation des types de demande -->
+                <div th:each="typeDemande : ${typeDemandes}" class="modal fade"
+                    th:id="'viewTypeDemandeModal' + ${typeDemande.idTypeDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Détails du Type de Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label><strong>ID:</strong></label>
+                                    <span th:text="${typeDemande.idTypeDemande}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Libellé:</strong></label>
+                                    <span th:text="${typeDemande.libelle}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Type de Service:</strong></label>
+                                    <span th:text="${typeDemande.typeService}" class="form-control-static"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de modification des types de demande -->
+                <div th:each="typeDemande : ${typeDemandes}" class="modal fade"
+                    th:id="'editTypeDemandeModal' + ${typeDemande.idTypeDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modification du Type de Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/typeDemande/modifier}" method="post">
+                                    <input type="hidden" name="idTypeDemande" th:value="${typeDemande.idTypeDemande}">
+
+                                    <div class="form-group">
+                                        <label>Libellé</label>
+                                        <input type="text" class="form-control" name="libelle"
+                                            th:value="${typeDemande.libelle}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Type de Service</label>
+                                        <input type="text" class="form-control" name="typeService"
+                                            th:value="${typeDemande.typeService}" required>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de suppression des types de demande -->
+                <div th:each="typeDemande : ${typeDemandes}" class="modal fade"
+                    th:id="'deleteTypeDemandeModal' + ${typeDemande.idTypeDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation de suppression</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir supprimer le type de demande <strong><span
+                                            th:text="${typeDemande.libelle}"></span></strong> ?</p>
+                                <p class="text-danger">Cette action est irréversible.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                <a th:href="@{/api/typeDemande/supprimer(id=${typeDemande.idTypeDemande})}"
+                                    class="btn btn-danger">Supprimer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestion des Demandes -->
+            <div class="row mt-5">
+                <div class="col-4">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="card-title">Ajouter une Demande</h3>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/api/demande/enregistrer}" method="post" th:object="${demande}">
+                                <div class="form-group">
+                                    <label for="dateDemande">Date de Demande</label>
+                                    <input type="date" class="form-control" id="dateDemande" th:field="*{dateDemande}"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="objetDemande">Objet de la Demande</label>
+                                    <input type="text" class="form-control" id="objetDemande" th:field="*{objetDemande}"
+                                        required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contenuDemande">Contenu de la Demande</label>
+                                    <textarea class="form-control" id="contenuDemande" th:field="*{contenuDemande}"
+                                        required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="typeDemande">Type de Demande</label>
+                                    <select class="form-control" id="typeDemande"
+                                        th:field="*{typeDemande.idTypeDemande}" required>
+                                        <option value="">Sélectionner un type de demande</option>
+                                        <option th:each="typeDemande : ${typeDemandes}"
+                                            th:value="${typeDemande.idTypeDemande}" th:text="${typeDemande.libelle}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="etudiant">Étudiant</label>
+                                    <select class="form-control" id="etudiant" th:field="*{etudiant.idUtilisateur}"
+                                        required>
+                                        <option value="">Sélectionner un étudiant</option>
+                                        <option th:each="etudiant : ${etudiants}" th:value="${etudiant.idUtilisateur}"
+                                            th:text="${etudiant.nom} + ' ' + ${etudiant.prenom}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-8">
+                    <div class="card">
+                        <div class="card-header bg-secondary text-white">
+                            <h3 class="card-title">Liste des Demandes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table id="demandeTable" class="table table-bordered table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Date de Demande</th>
+                                            <th>Objet</th>
+                                            <th>Contenu</th>
+                                            <th>Type de Demande</th>
+                                            <th>Étudiant</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="demande : ${demandes}">
+                                            <td th:text="${demande.idDemande}"></td>
+                                            <td th:text="${demande.dateDemande}"></td>
+                                            <td th:text="${demande.objetDemande}"></td>
+                                            <td th:text="${demande.contenuDemande}"></td>
+                                            <td th:text="${demande.typeDemande?.libelle}"></td>
+                                            <td th:text="${demande.etudiant?.nom} + ' ' + ${demande.etudiant?.prenom}">
+                                            </td>
+                                            <td>
+                                                <a href="#" class="btn btn-info btn-sm"
+                                                    th:data-target="'#viewDemandeModal' + ${demande.idDemande}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-warning btn-sm"
+                                                    th:data-target="'#editDemandeModal' + ${demande.idDemande}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <a href="#" class="btn btn-danger btn-sm"
+                                                    th:data-target="'#deleteDemandeModal' + ${demande.idDemande}"
+                                                    data-toggle="modal">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de visualisation des demandes -->
+                <div th:each="demande : ${demandes}" class="modal fade"
+                    th:id="'viewDemandeModal' + ${demande.idDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Détails de la Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label><strong>ID:</strong></label>
+                                    <span th:text="${demande.idDemande}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Date de Demande:</strong></label>
+                                    <span th:text="${demande.dateDemande}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Objet:</strong></label>
+                                    <span th:text="${demande.objetDemande}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Contenu:</strong></label>
+                                    <span th:text="${demande.contenuDemande}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Type de Demande:</strong></label>
+                                    <span th:text="${demande.typeDemande?.libelle}" class="form-control-static"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Étudiant:</strong></label>
+                                    <span th:text="${demande.etudiant?.nom} + ' ' + ${demande.etudiant?.prenom}"
+                                        class="form-control-static"></span>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de modification des demandes -->
+                <div th:each="demande : ${demandes}" class="modal fade"
+                    th:id="'editDemandeModal' + ${demande.idDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Modification de la Demande</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form th:action="@{/api/demande/modifier}" method="post">
+                                    <input type="hidden" name="idDemande" th:value="${demande.idDemande}">
+
+                                    <div class="form-group">
+                                        <label>Date de Demande</label>
+                                        <input type="date" class="form-control" name="dateDemande"
+                                            th:value="${demande.dateDemande}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Objet</label>
+                                        <input type="text" class="form-control" name="objetDemande"
+                                            th:value="${demande.objetDemande}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Contenu</label>
+                                        <textarea class="form-control" name="contenuDemande"
+                                            required>[[${demande.contenuDemande}]]</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Type de Demande</label>
+                                        <select class="form-control" name="typeDemande.idTypeDemande" required>
+                                            <option value="">Sélectionner un type de demande</option>
+                                            <option th:each="typeDemande : ${typeDemandes}"
+                                                th:value="${typeDemande.idTypeDemande}" th:text="${typeDemande.libelle}"
+                                                th:selected="${typeDemande.idTypeDemande} == ${demande.typeDemande.idTypeDemande}">
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Étudiant</label>
+                                        <select class="form-control" name="etudiant.idUtilisateur" required>
+                                            <option value="">Sélectionner un étudiant</option>
+                                            <option th:each="etudiant : ${etudiants}" th:value="${etudiant.idUtilisateur}"
+                                                th:text="${etudiant.nom} + ' ' + ${etudiant.prenom}"
+                                                th:selected="${etudiant.idUtilisateur} == ${demande.etudiant.idUtilisateur}">
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Annuler</button>
+                                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de suppression des demandes -->
+                <div th:each="demande : ${demandes}" class="modal fade"
+                    th:id="'deleteDemandeModal' + ${demande.idDemande}" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Confirmation de suppression</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Êtes-vous sûr de vouloir supprimer la demande <strong><span
+                                            th:text="${demande.objetDemande}"></span></strong> ?</p>
+                                <p class="text-danger">Cette action est irréversible.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                <a th:href="@{/api/demande/supprimer(id=${demande.idDemande})}"
+                                    class="btn btn-danger">Supprimer</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de notification succès -->
+                <div class="modal fade" id="messageModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-check-circle text-success fa-2x"></i> Notification
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p th:if="${successMessage}" th:text="${successMessage}"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal de notification erreur -->
+                <div class="modal fade" id="erreurModal" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-exclamation-circle text-danger fa-2x"></i> Notification d'erreur
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <ul class="list-unstyled" th:if="${erreurs != null && !erreurs.empty}">
+                                    <li class="d-flex align-items-center mb-2" th:each="erreur : ${erreurs}">
+                                        <i class="fas fa-times-circle mr-2 text-danger"></i>
+                                        <span th:text="${erreur}"></span>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">Fermer</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#typeDemandeTable').DataTable({
+                "pagingType": "full_numbers",
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr_fr.json",
+                    "search": "Recherche :",
+                    "lengthMenu": "Afficher _MENU_ entrées par page",
+                    "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    "paginate": {
+                        "first": "<<",
+                        "last": ">>",
+                        "next": ">",
+                        "previous": "<"
+                    }
+                }
+            });
+
+            $('#demandeTable').DataTable({
+                "pagingType": "full_numbers",
+                "language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.11.5/i18n/fr_fr.json",
+                    "search": "Recherche :",
+                    "lengthMenu": "Afficher _MENU_ entrées par page",
+                    "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                    "paginate": {
+                        "first": "<<",
+                        "last": ">>",
+                        "next": ">",
+                        "previous": "<"
+                    }
+                }
+            });
+        });
+    </script>
+
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            // Récupération des messages depuis Thymeleaf
+            var successMessage = /*[[${successMessage}]]*/ null;
+            var erreurs = /*[[${erreurs}]]*/ null;
+
+            // Affichage modal de succès
+            if (successMessage && successMessage !== '') {
+                $('#messageModal').modal('show');
+                // Auto-fermeture après 2 secondes
+                setTimeout(function () {
+                    $('#messageModal').modal('hide');
+                }, 2000);
+            }
+
+            // Affichage modal d'erreur
+            if (erreurs && erreurs.length > 0) {
+                $('#erreurModal').modal('show');
+            }
+
+            // Initialisation des DataTables
+            $('#typeDemandeTable').DataTable();
+            $('#demandeTable').DataTable();
+        });
+    </script>
+</body>
+
+</html>
