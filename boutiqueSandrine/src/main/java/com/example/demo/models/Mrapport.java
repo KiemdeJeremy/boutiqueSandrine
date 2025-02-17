@@ -1,6 +1,7 @@
 package com.example.demo.models;
 
 import java.security.Timestamp;
+import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,7 +27,7 @@ public class Mrapport {
     private String etat;
 
     @Column(name = "dateRapport", nullable = false)
-    private Timestamp dateRapport;
+    private LocalDate dateRapport;
 
     @Column(name = "contenuRapport", nullable = false)
     private String contenuRapport;
@@ -34,4 +35,8 @@ public class Mrapport {
     @ManyToOne
     @JoinColumn(name = "idPersonnel", nullable = true)
     private Mpersonnel personnel;
+
+    public Mrapport() {
+        
+    }
 }

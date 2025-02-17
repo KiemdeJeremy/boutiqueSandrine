@@ -24,7 +24,7 @@ public class RapportValidateur extends Validateur {
         }
 
         // Validation de la date du rapport
-        if (dateRapport == null || !ValidationUtils.isValidTimestamp(dateRapport)) {
+        if (dateRapport == null || !ValidationUtils.isValidDate(dateRapport)) {
             erreurs.add("La date du rapport est invalide.");
         }
 

@@ -11,6 +11,7 @@ import com.example.demo.models.Mpersonnel;
 import com.example.demo.repository.EtudiantRepository;
 import com.example.demo.repository.PersonnelRepository;
 
+
 @Service
 public class ConnexionService {
 
@@ -20,11 +21,11 @@ public class ConnexionService {
     @Autowired
     private EtudiantRepository etudiantRepository;
 
-    public String verifierUtilisateur(String email, String password, RedirectAttributes redirectAttributes) {
+    public String verifierUtilisateur(String email, String password, RedirectAttributes redirectAttributes ) {
         List<Metudiant> etudiants = etudiantRepository.findAll();
-
         for (Metudiant etudiant : etudiants) {
             if (etudiant.getEmail().equals(email) && etudiant.getPassword().equals(password)) {
+                
                 return "redirect:/index";
             }
         }

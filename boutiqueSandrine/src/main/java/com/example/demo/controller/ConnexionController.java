@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.demo.services.ConnexionService;
 
+
 @Controller
 public class ConnexionController {
     
@@ -31,7 +32,7 @@ public class ConnexionController {
         @RequestParam("password") String password,
         RedirectAttributes redirectAttributes
     ) {
-        String result = connexionService.verifierUtilisateur(email, password, redirectAttributes);
+        String result = connexionService.verifierUtilisateur(email, password, redirectAttributes );
         if (result.equals("connexion")) {
             redirectAttributes.addFlashAttribute("error", "Email ou mot de passe incorrect");
             return "redirect:/";
