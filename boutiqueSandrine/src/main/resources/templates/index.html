@@ -1,6 +1,7 @@
 <!-- src/main/resources/templates/index.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Page d'accueil</title>
@@ -8,19 +9,34 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
 </head>
+
 <body>
     <!-- Inclure le fragment "headerFragment" depuis header.html -->
     <div th:replace="inclusions/header :: headerFragment"></div>
 
     <!-- Contenu principal de la page -->
-    <div class="container">
-        <h1>Bienvenue sur la page d'accueil</h1>
-        <p>Ceci est un exemple de page utilisant Thymeleaf.</p>
+    <div class="container-fluid">
+        <div class="row d-flex justify-content-center mt-4">
+           <p class="h2"><strong>BIENVENUE !!!</strong> <i>Laissez nous vous aider</i></p>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12">
+                <div class="d-flex flex-wrap justify-content-between">
+                    <img src="/images/CampusFasoLogo.jpg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                    <img src="/images/burkina faso.jpeg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                    <img src="/images/etalon.jpg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                    <img src="/images/monument.jpg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                    <img src="/images/tourisme.jpg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                    <img src="/images/digital.jpeg" alt="logo de campus faso" class="mt-3 mr-4" style="width: 580px; height: 350px;" />
+                </div>
+            </div>
+        </div>
     </div>
 
-     <!--Fin de la section de code pour afficher les produits dynamiquement-->
-     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!--Fin de la section de code pour afficher les produits dynamiquement-->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
+
 </html>
